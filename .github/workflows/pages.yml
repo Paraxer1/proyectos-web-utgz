@@ -1,4 +1,4 @@
-name: Deploy demo to GitHub Pages
+name: Deploy app-web to GitHub Pages
 
 on:
   push:
@@ -17,7 +17,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   deploy:
+
     runs-on: ubuntu-latest
 
     environment:
@@ -25,15 +27,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Preparar sitio
+      - name: Preparar app-web
         shell: bash
         run: |
+
           rm -rf _site
           mkdir -p _site
 
@@ -43,21 +47,18 @@ jobs:
             --exclude='_site' \
             ./ _site/
 
-          if [ -f "_site/index.html" ]; then
-            echo "index.html encontrado."
-
-          elif [ -f "_site/Practica1.html" ]; then
-            echo "Usando Practica1.html como index.html"
-            cp "_site/Practica1.html" "_site/index.html"
-
-          else
-            echo "ERROR: No existe index.html ni Practica1.html"
+          if [ ! -f "_site/index.html" ]; then
+            echo "ERROR: app-web no contiene index.html"
             exit 1
           fi
 
-          echo ""
-          echo "Archivos que GitHub publicara:"
-          find _site -maxdepth 2 -type f | sort
+          echo
+          echo "INDEX PRINCIPAL:"
+          echo "_site/index.html"
+
+          echo
+          echo "ARCHIVOS PUBLICADOS:"
+          find _site -maxdepth 3 -type f | sort
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
